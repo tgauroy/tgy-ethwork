@@ -10,23 +10,19 @@ COPY artifacts/credentials.* $DATA_DIR/
 COPY artifacts/key.* /root/
 COPY artifacts/static-nodes.json /root/.ethereum/static-nodes.json
 
-
+RUN yum -y  install wget && wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm && rpm -ivh epel-release-7-8.noarch.rpm
+    
 RUN yum install golang -y &&  \
 	yum install gmp-devel -y  && \
 	yum install git -y  && \
 	yum -y install nodejs npm --enablerepo=epel  && \
-    yum -y install python
+    yum -y install python && \ 
+    yum install make -y
 
 
 RUN  git clone https://github.com/ethereum/go-ethereum
 
-RUN yum install make -y
-
 RUN cd /go-ethereum &&  make geth 
-
-RUN yum -y  install wget
-
-RUN wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm && rpm -ivh epel-release-7-8.noarch.rpm
 
 RUN for i in miner buyer seller carrier inspector bank1 bank2; do \
     /go-ethereum/build/bin/geth --password $DATA_DIR/credentials.$i --datadir=$DATA_DIR account new > $DATA_DIR/$i.id; \
