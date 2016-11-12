@@ -3,8 +3,6 @@ MAINTAINER Thomas GAUROY <thomas.gauroy@gmail.com>
 
 ENV DATA_DIR /root/.ethereum
 ARG NETWORKID=42
-ENV SUBNET 42.42.42
-
 RUN mkdir $DATA_DIR
 
 COPY artifacts/genesis.json $DATA_DIR/genesis.json
@@ -15,12 +13,14 @@ COPY artifacts/static-nodes.json /root/.ethereum/static-nodes.json
 
 RUN yum install golang -y &&  \
 	yum install gmp-devel -y  && \
-	yum install git -y 
+	yum install git -y  && \
+	yum -y install nodejs npm --enablerepo=epel  && \
+    yum -y install python
+
 
 RUN  git clone https://github.com/ethereum/go-ethereum
 
 RUN yum install make -y
-
 
 RUN cd /go-ethereum &&  make geth 
 
@@ -35,10 +35,9 @@ RUN for i in miner buyer seller carrier inspector bank1 bank2; do \
     sed -i "s/$i/0x$(cat $DATA_DIR/$i.id)/" $DATA_DIR/genesis.json; \
     done
 
-RUN /go-ethereum/build/bin/geth --networkid $NETWORKID init $DATA_DIR/genesis.json && \
-    yum -y install nodejs npm --enablerepo=epel  && \
-    yum -y install python && \
-    git clone https://github.com/ing-bank/eth-netstats &&\
+RUN /go-ethereum/build/bin/geth --networkid $NETWORKID init $DATA_DIR/genesis.json 
+
+RUN git clone https://github.com/ing-bank/eth-netstats &&\
     cd /eth-netstats && npm install &&\
     cd /eth-netstats && npm install -g grunt-cli &&\
     cd /eth-netstats && grunt && \
