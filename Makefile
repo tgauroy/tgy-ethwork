@@ -66,11 +66,11 @@ ethstats:
 console: ciminer
 
 ciminer:
-	docker exec -ti miner /geth attach
+	docker exec -ti miner /go-ethereum/build/bin/geth attach
 
 cinode1:
-	docker exec -ti node1 /geth attach
+	docker exec -ti node1 /go-ethereum/build/bin/geth attach
 
 cinode2:
-	docker exec -ti node2 /geth attach
+	docker exec -ti node2 /go-ethereum/build/bin/geth attach
 
